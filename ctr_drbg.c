@@ -1032,7 +1032,7 @@ drbg_error ctr_drbg_generate(drbg_ctx *ctx,
 		ret = CTR_DRBG_ILLEGAL_INPUT;
 		goto err;
 	}
-
+	
 	/* Access specific data */
 	seed_len  = DRBG_CTR_GET_DATA(ctx, seed_len);
 	ctr_len   = DRBG_CTR_GET_DATA(ctx, ctr_len);
@@ -1096,10 +1096,12 @@ drbg_error ctr_drbg_generate(drbg_ctx *ctx,
 		if((ret = ctr_drbg_block_encrypt(ctx, Key, V, out_block)) != CTR_DRBG_OK){
 			goto err;
 		}
+
 		to_copy = ((out_len - i) < block_len) ? (out_len - i) : block_len;
 		memcpy(&out[i], out_block, to_copy);
 		i += block_len;
 	}
+
 
 	if((ret = ctr_drbg_update(ctx, additional_input, seed_len)) != CTR_DRBG_OK){
 		goto err;

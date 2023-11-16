@@ -9,6 +9,7 @@
  */
 
 #include "entropy.h"
+#include <stdlib.h>
 
 #ifdef WITH_TEST_ENTROPY_SOURCE
 /* We provide some default entropy sources for testing if explicitly
@@ -220,17 +221,24 @@ err:
  */
 int get_entropy_input(uint8_t **in, uint32_t len, bool prediction_resistance)
 {
-	int ret;
+	// int ret;
 
 	/* Avoid unused parameter warnings */
 	(void)in;
 	(void)len;
 	(void)prediction_resistance;
 
-	printf("Error: please provide your implementation of entropy gathering in the file '%s'!\n", __FILE__);
-	ret = -1;
+	// printf("Error: please provide your implementation of entropy gathering in the file '%s'!\n", __FILE__);
+	// ret = -1;
+	
+	uint8_t* buf = (uint8_t *)malloc(sizeof(uint8_t) * len);
 
-	return ret;
+	for(uint32_t i=0;i<len;i++){
+		buf[i] = 0;
+	}
+	(*in) = buf;
+	// return ret;
+	return 0;
 }
 
 int clear_entropy_input(uint8_t *buf)
@@ -238,9 +246,8 @@ int clear_entropy_input(uint8_t *buf)
 	int ret;
 	/* Avoid unused parameter warnings */
 	(void)buf;
-
-	printf("Error: please provide your implementation of entropy clearing in the file '%s'!\n", __FILE__);
-	ret = -1;
+	
+	ret = 0;
 
 	return ret;
 }

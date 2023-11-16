@@ -469,6 +469,7 @@ step7:
 		/* 7.5  Clear the reseed_required_flag */
 		ctx->reseed_required_flag = false;
 	}
+	
 	/* 8. Call generate */
 	if((ret = ctx->methods->generate(ctx, local_addin, local_addin_len, out, out_len)) != DRBG_OK){
 		/*  If status indicates that a reseed is required before the requested bits can be generated,

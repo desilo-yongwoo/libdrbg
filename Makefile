@@ -8,7 +8,10 @@ AES_SRC_DIR = aes/
 TDES_SRC_DIR = $(LIBHASH_SRC_DIR)
 SELF_TESTS_SRC_DIR = drbg_tests/
 
-CFLAGS ?= -O3 -fPIC -std=c99 -Wall -Wextra -I./ -I$(LIBHASH_SRC_DIR) -I$(AES_SRC_DIR) -I$(TDES_SRC_DIR) -I$(SELF_TESTS_SRC_DIR)
+PYTHON_CFLAGS := $(shell pkg-config python-3.10 --libs --cflags)
+PYBIND_CFLAGS := $(shell python3 -m pybind11 --includes)
+CFLAGS ?= -O3 -fPIC $(PYTHON_CFLAGS) $(PYBIND_CFLAGS) -std=c++11 -Wall -Wextra -I./ -I$(LIBHASH_SRC_DIR) -I$(AES_SRC_DIR) -I$(TDES_SRC_DIR) -I$(SELF_TESTS_SRC_DIR)
+
 
 CFLAGS += $(EXTRA_CFLAGS)
 
@@ -153,7 +156,7 @@ OBJS  = $(patsubst %.c,%.o,$(SRCS))
 	$(CROSS_COMPILE)$(CC) $(CFLAGS) -c -o $@ $<
 
 drbg: $(OBJS) _libhash
-	$(CROSS_COMPILE)$(CC) -o $@ $(CFLAGS) $(OBJS) $(LDFLAGS)
+	$(CROSS_COMPILE)$(CC) -fPIC -shared $(python3 -m pybind11 --includes) -o $@$(shell python3.10-config --extension-suffix) $(CFLAGS) $(OBJS) $(LDFLAGS)
 
 _libhash:
 	cd $(LIBHASH_DIR) && CROSS_COMPILE=$(CROSS_COMPILE) USE_SANITIZERS=$(USE_SANITIZERS) WERROR=$(WERROR) WITH_HASH_CONF_OVERRIDE="$(WITH_HASH_CONF_OVERRIDE)" LIB_CFLAGS="$(CFLAGS)" EXTRA_CFLAGS="$(EXTRA_CFLAGS)" make
@@ -163,3 +166,4 @@ all: _libhash $(OBJS) drbg
 clean:
 	@cd $(LIBHASH_DIR) && make clean
 	@rm -f $(OBJS) drbg
+	@rm -f *.so
